@@ -1,0 +1,56 @@
+.dual-service-btn-section {
+  display: flex;
+  gap: 20px;
+}
+
+.information-with-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.information-with-btn-para {
+  font-size: 15px;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.bookingForm-popup-content {
+  height: 500px;
+  overflow-y: auto;
+  margin-top: 20px;
+  padding: 10px;
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.bookingForm-popup-title h2 {
+  color: #2d3436;
+}
+
+.bookingForm-popup-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.bookingForm-popup-detail-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.bookingForm-popup-detail-label {
+  font-size: 16px;
+  width: 30%;
+  color: #2d3436;
+  font-weight: 500;
+}
+
+.bookingForm-popup-detail-input-box {
+  width: 100%;
+}

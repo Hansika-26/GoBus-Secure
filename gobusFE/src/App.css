@@ -1,0 +1,11 @@
+:where(.css-dev-only-do-not-override-dkbvqv).ant-notification {
+  z-index: 10000;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+.main-passenger-container {
+  padding-top: 70px;
+}
