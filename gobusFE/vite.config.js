@@ -21,6 +21,8 @@ export default defineConfig({
       // Vulnerability 3 fix: X-Frame-Options for legacy browser compatibility
       // frame-ancestors 'none' (above) covers modern browsers; this covers pre-CSP2 browsers
       'X-Frame-Options': 'DENY',
+      // Vulnerability 4 fix: prevent MIME-type sniffing
+      'X-Content-Type-Options': 'nosniff',
     },
   },
 })

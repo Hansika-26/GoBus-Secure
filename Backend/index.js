@@ -115,6 +115,9 @@ app.use(
 // frameAncestors 'none' (above) covers modern browsers; this covers pre-CSP2 browsers
 app.use(helmet.frameguard({ action: "deny" }));
 
+// Vulnerability 4 fix: prevent MIME-type sniffing
+app.use(helmet.noSniff());
+
 app.use(bodyParser.json());
 app.use("/auth", router);
 app.use("/public", router);
