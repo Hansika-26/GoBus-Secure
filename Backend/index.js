@@ -11,9 +11,15 @@ const errorHandler = require("./middlewares/errorHandler");
 const Bus = require("./models/bus");
 
 const server = http.createServer(app);
+
+const allowedOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(",").map((o) => o.trim())
+  : ["http://localhost:3000"];
+
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
   },
 });
 
@@ -79,7 +85,14 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
 app.use("/auth", router);
 app.use("/public", router);
