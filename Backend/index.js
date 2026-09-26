@@ -28,6 +28,15 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.setHeader(
+    "Permissions-Policy",
+    "camera=(), microphone=(), payment=(), usb=(), geolocation=(self)"
+  );
+
+  next();
+});
+
 const { Server } = require("socket.io");
 
 const http = require("http");
