@@ -111,6 +111,10 @@ app.use(
   })
 );
 
+// Vulnerability 3 fix: X-Frame-Options for legacy browser compatibility
+// frameAncestors 'none' (above) covers modern browsers; this covers pre-CSP2 browsers
+app.use(helmet.frameguard({ action: "deny" }));
+
 app.use(bodyParser.json());
 app.use("/auth", router);
 app.use("/public", router);

@@ -18,6 +18,9 @@ export default defineConfig({
         "object-src 'none'",
         "frame-ancestors 'none'",
       ].join('; '),
+      // Vulnerability 3 fix: X-Frame-Options for legacy browser compatibility
+      // frame-ancestors 'none' (above) covers modern browsers; this covers pre-CSP2 browsers
+      'X-Frame-Options': 'DENY',
     },
   },
 })
