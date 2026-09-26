@@ -3,15 +3,30 @@ require("dotenv").config();
 require("./db/mongodb");
 
 const express = require("express");
-
-// Disable Express technology disclosure
-app.disable("x-powered-by");
-
+const helmet = require("helmet");
 const cors = require("cors");
-
 const bodyParser = require("body-parser");
 
 const app = express();
+app.disable("x-powered-by");
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        frameAncestors: ["'none'"],
+        formAction: ["'self'"],
+      },
+    },
+  })
+);
 
 const { Server } = require("socket.io");
 
