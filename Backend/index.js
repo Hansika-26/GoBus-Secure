@@ -2,6 +2,7 @@ require("dotenv").config();
 require("./db/mongodb");
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const app = express();
 const { Server } = require("socket.io");
@@ -93,6 +94,23 @@ app.use(
     credentials: true,
   })
 );
+
+// Vulnerability 2 fix: Content Security Policy header
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      fontSrc: ["'self'"],
+      imgSrc: ["'self'", "data:"],
+      connectSrc: ["'self'", ...allowedOrigins],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+    },
+  })
+);
+
 app.use(bodyParser.json());
 app.use("/auth", router);
 app.use("/public", router);
