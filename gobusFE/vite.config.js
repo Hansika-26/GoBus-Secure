@@ -11,8 +11,8 @@ export default defineConfig({
         "default-src 'self'",
         // 'unsafe-inline' + 'unsafe-eval' required by Vite HMR and @vitejs/plugin-react preamble (dev only)
         "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-        "font-src 'self' https://fonts.gstatic.com",
+        "style-src 'self' 'unsafe-inline'",
+        "font-src 'self'",
         "img-src 'self' data:",
         "connect-src 'self' http://localhost:5000 ws://localhost:5000",
         "object-src 'none'",
