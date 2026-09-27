@@ -5,6 +5,11 @@ const FeedbackRouter = require("./feedback.routes");
 const EmployeeRouter = require("./employee.routes");
 const BusOwnerRouter = require("./busOwner.routes");
 const { login } = require("../controllers/user.controller");
+const {
+  googleAuthInit,
+  googleAuthCallback,
+  getGoogleOAuthSession,
+} = require("../controllers/oauth.controller");
 const RouteRouter = require("./route.routes");
 const TripRouter = require("./trip.routes");
 const ComplaintRouter = require("./complaint.routes");
@@ -15,6 +20,9 @@ const ChatRouter = require("./chat.routes");
 const router = Router();
 
 router.post("/login", login);
+router.get("/google", googleAuthInit);
+router.get("/google/callback", googleAuthCallback);
+router.get("/google/session", getGoogleOAuthSession);
 router.use("/passenger", PassengerRouter);
 router.use("/bus", BusRouter);
 router.use("/feedback", FeedbackRouter);
