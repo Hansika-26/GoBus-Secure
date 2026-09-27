@@ -1,24 +1,75 @@
 require("dotenv").config();
 require("./db/mongodb");
+
 const express = require("express");
+const helmet = require("helmet");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const helmet = require("helmet");
 const bodyParser = require("body-parser");
-const app = express();
-
-app.use(cookieParser());
-const { Server } = require("socket.io");
 const http = require("http");
+const { Server } = require("socket.io");
+
 const router = require("./routes/_index.routes");
 const errorHandler = require("./middlewares/errorHandler");
 const Bus = require("./models/bus");
+const chatSocket = require("./sockets/chatSocket");
 
-const server = http.createServer(app);
+const app = express();
 
+// Disable x-powered-by header
+app.disable("x-powered-by");
+
+// Parse cookies and request bodies early
+app.use(cookieParser());
+app.use(bodyParser.json());
+
+// Allowed origins setup
 const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(",").map((o) => o.trim())
   : ["http://localhost:3000"];
+
+// CORS configuration
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+// Security Headers (Helmet, CSP, Permissions-Policy)
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", ...allowedOrigins, "http://localhost:5000", "ws://localhost:5000"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        frameAncestors: ["'none'"],
+        formAction: ["'self'"],
+      },
+    },
+    frameguard: { action: "deny" },
+    noSniff: true,
+  })
+);
+
+app.use((req, res, next) => {
+  res.setHeader(
+    "Permissions-Policy",
+    "camera=(), microphone=(), payment=(), usb=(), geolocation=(self)"
+  );
+  next();
+});
+
+// HTTP & Socket.io Server Setup
+const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
@@ -27,7 +78,6 @@ const io = new Server(server, {
   },
 });
 
-const chatSocket = require("./sockets/chatSocket");
 chatSocket(io);
 
 const busLocations = {};
@@ -66,14 +116,12 @@ io.on("connection", (socket) => {
     const { busId } = data;
 
     console.log("getInitialLocation request for busId:", busId);
-    // Check if we have location data for this specific bus
     if (busLocations[busId]) {
       console.log(
         "Sending initial location for busId:",
         busId,
         busLocations[busId]
       );
-      // Send the bus location only to the requesting client
       socket.emit("getLocation", {
         busId,
         latitude: busLocations[busId].latitude,
@@ -89,42 +137,11 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(
-  cors({
-    origin: allowedOrigins,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
-
-// Vulnerability 2 fix: Content Security Policy header
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      fontSrc: ["'self'"],
-      imgSrc: ["'self'", "data:"],
-      connectSrc: ["'self'", ...allowedOrigins, "http://localhost:5000", "ws://localhost:5000"],
-      objectSrc: ["'none'"],
-      frameAncestors: ["'none'"],
-    },
-  })
-);
-
-// Vulnerability 3 fix: X-Frame-Options for legacy browser compatibility
-// frameAncestors 'none' (above) covers modern browsers; this covers pre-CSP2 browsers
-app.use(helmet.frameguard({ action: "deny" }));
-
-// Vulnerability 4 fix: prevent MIME-type sniffing
-app.use(helmet.noSniff());
-
-app.use(bodyParser.json());
+// Routes & Middleware
 app.use("/auth", router);
 app.use("/public", router);
 app.use(errorHandler);
+
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
