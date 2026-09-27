@@ -20,13 +20,23 @@ const passengerSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: function () {
+      return !this.googleId;
+    },
   },
   mobile: {
     type: String,
     unique: true,
-    min: 10,
-    max: 10,
+    sparse: true,
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
+  authProvider: {
+    type: String,
+    default: "local",
   },
   tokens: [
     {
@@ -40,7 +50,7 @@ const passengerSchema = new mongoose.Schema({
 passengerSchema.pre("save", async function (next) {
   const passenger = this;
 
-  if (passenger.isModified("password")) {
+  if (passenger.isModified("password") && passenger.password) {
     passenger.password = await bcrypt.hash(passenger.password, 8);
   }
 
@@ -52,6 +62,12 @@ passengerSchema.statics.findByCredentials = async (email, password) => {
   if (!passenger) {
     const error = new Error("User not found");
     error.statusCode = 404;
+    throw error;
+  }
+
+  if (!passenger.password) {
+    const error = new Error("Please log in using your Google account");
+    error.statusCode = 400;
     throw error;
   }
 

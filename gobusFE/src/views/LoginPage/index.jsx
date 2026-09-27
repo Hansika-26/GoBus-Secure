@@ -7,6 +7,8 @@ import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import "./style.css";
 import { notification } from "antd";
 import { login } from "../../apis/userAPIs";
+import axiosInstance from "../../services/axios instance";
+import { BASE_URL } from "../../../Keys";
 import SignUp_Popup from "../../components/LoginSignUpModal/LoginSignUpModal";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -36,8 +38,48 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    handleLoggedUserRoute();
+    const urlParams = new URLSearchParams(window.location.search);
+    const oauthStatus = urlParams.get("oauth");
+    const oauthMessage = urlParams.get("message");
+
+    if (oauthStatus === "success") {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      setIsLoading(true);
+      axiosInstance
+        .get("auth/google/session", { withCredentials: true })
+        .then((res) => {
+          setIsLoading(false);
+          if (res && res.code === 0 && res.data) {
+            notification.success({
+              message: "Google Sign-In successful!",
+            });
+            dispatch(setPassengerInfo(res.data));
+            navigate("/");
+          } else {
+            notification.error({
+              message: res?.msg || "Failed to retrieve Google session",
+            });
+          }
+        })
+        .catch((err) => {
+          setIsLoading(false);
+          notification.error({
+            message: err?.response?.data?.msg || "Google authentication failed",
+          });
+        });
+    } else if (oauthStatus === "error") {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      notification.error({
+        message: oauthMessage || "Google Sign-In was cancelled or failed",
+      });
+    } else {
+      handleLoggedUserRoute();
+    }
   }, []);
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${BASE_URL}/auth/google`;
+  };
 
   const handleInput = (field) => (e) => {
     setInputErr({ ...inputErr, [field]: false });
@@ -151,9 +193,13 @@ export default function LoginPage() {
           </div>
 
           <div className="login-footer">
-            <section className="google-login">
-              <img src={googleLogo} style={{ width: 28, height: 28 }} />
-              <p>Login with google</p>
+            <section
+              className="google-login"
+              onClick={handleGoogleLogin}
+              style={{ cursor: "pointer" }}
+            >
+              <img src={googleLogo} style={{ width: 28, height: 28 }} alt="Google logo" />
+              <p>Continue with Google</p>
             </section>
 
             <section className="sign-up-link">

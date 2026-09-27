@@ -2,9 +2,12 @@ require("dotenv").config();
 require("./db/mongodb");
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const app = express();
+
+app.use(cookieParser());
 const { Server } = require("socket.io");
 const http = require("http");
 const router = require("./routes/_index.routes");
@@ -104,7 +107,7 @@ app.use(
       styleSrc: ["'self'", "'unsafe-inline'"],
       fontSrc: ["'self'"],
       imgSrc: ["'self'", "data:"],
-      connectSrc: ["'self'", ...allowedOrigins],
+      connectSrc: ["'self'", ...allowedOrigins, "http://localhost:5000", "ws://localhost:5000"],
       objectSrc: ["'none'"],
       frameAncestors: ["'none'"],
     },
