@@ -11,7 +11,7 @@
     <!-- Vulnerability 2 & 5 fix: CSP for production builds (frame-ancestors omitted per spec; external font domains removed as fonts are self-hosted) -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none';"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' http://localhost:5000 ws://localhost:5000; object-src 'none';"
     />
     <title>GoBus</title>
   </head>

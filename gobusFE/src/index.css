@@ -4,8 +4,9 @@
   box-sizing: border-box;
   font-family: outfit;
 }
-:where(.css-dev-only-do-not-override-dkbvqv).ant-notification {
-  z-index: 200000;
+.ant-notification {
+  top: 90px !important;
+  z-index: 100000 !important;
 }
 
 
