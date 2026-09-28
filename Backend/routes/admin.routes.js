@@ -17,9 +17,13 @@ const {
 } = require("../controllers/admin.controller");
 const { registerPassenger } = require("../controllers/passenger.controller");
 const { registerBusOwner, updateBusOwner } = require("../controllers/busOwner.controller");
+const adminAuth = require("../middlewares/adminAuth");
 const AdminRouter = Router();
 
 AdminRouter.post("/login", adminLogin)
+
+AdminRouter.use(adminAuth);
+
 AdminRouter.get("/complaints", getComplaints);
 AdminRouter.put("/complaints/:id", complaintResolved);
 AdminRouter.get("/passengers", getPassengers);
