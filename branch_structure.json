@@ -1,0 +1,18 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "main",
+    "origin",
+    "security-fixes"
+  ],
+  "parent": {
+    "main": null,
+    "origin": "main",
+    "security-fixes": "main"
+  },
+  "order": [
+    "main",
+    "origin",
+    "security-fixes"
+  ]
+}

@@ -4,6 +4,7 @@ import MyButton from "../../components/button";
 import { adminLogin } from "../../apis/adminAPIs";
 import { useNavigate } from "react-router-dom";
 import { notification } from "antd";
+import { AuthService } from "../../services/auth services";
 import "./style.css";
 
 export default function AdminLogin() {
@@ -59,6 +60,7 @@ export default function AdminLogin() {
 
       const { data, code, msg } = await adminLogin(credentials);
       if (code === 0) {
+        AuthService.setTokens(data.token);
         notification.success({
           message: "Login Successful",
           description: "Welcome to Admin Dashboard",
